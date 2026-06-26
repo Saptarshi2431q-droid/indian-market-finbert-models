@@ -1,0 +1,25 @@
+@"
+# Environments
+env/
+__pycache__/
+
+# Datasets
+*.csv
+*.xlsx
+
+# Plots and Images
+*.png
+*.jpg
+
+# Logs and Models
+lightning_logs/
+wandb/
+indian_finbert_model/
+optimized_indian_finbert_final/
+experimental_finbert_models/
+*.pt
+*.bin
+*.ckpt
+*.safetensors
+*.h5
+"@ | Out-File -FilePath .gitignore -Encoding utf8
