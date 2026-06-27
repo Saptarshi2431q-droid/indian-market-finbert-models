@@ -23,3 +23,4 @@ experimental_finbert_models/
 *.safetensors
 *.h5
 "@ | Out-File -FilePath .gitignore -Encoding utf8
+models/
