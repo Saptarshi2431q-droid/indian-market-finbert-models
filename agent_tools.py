@@ -30,35 +30,27 @@ def get_live_price(ticker: str) -> str:
 
 def get_financial_news(ticker: str) -> str:
     """
-    Queries real-time news and aggressively sanitizes the output 
-    so the LLM only receives a clean list of strings.
+    [TASK 1 BASELINE HACK]
+    Bypasses Yahoo Finance and aggressively loads a massive JSON payload 
+    to test the Maximum Effective Context Window (MECW) and trigger rate limits.
     """
-    fallback_news = [
-        f"Analysts update price targets for {ticker.upper()}.",
-        f"Market volume remains steady for {ticker.upper()} going into Q3.",
-        f"{ticker.upper()} evaluating new institutional growth strategies."
-    ]
+    import os
+    print(f"[SYSTEM WARNING] Fetching bloated 100-article payload for {ticker}...")
     
+    file_path = "100_articles_dump.json"
+    
+    if not os.path.exists(file_path):
+        return json.dumps(["[ERROR] 100_articles_dump.json not found."])
+        
     try:
-        stock = yf.Ticker(f"{ticker.strip().upper()}.NS")
-        news_stream = stock.news
-        
-        if not news_stream:
-            return json.dumps(fallback_news)
+        with open(file_path, "r", encoding="utf-8") as file:
+            massive_payload = json.load(file)
             
-        # Extract ONLY the title strings, dropping all URLs and metadata
-        clean_headlines = []
-        for item in news_stream[:5]:
-            if isinstance(item, dict) and 'title' in item:
-                clean_headlines.append(item['title'])
-                
-        if not clean_headlines:
-            return json.dumps(fallback_news)
-            
-        return json.dumps(clean_headlines)
+        # We are intentionally NOT slicing this. We want the full payload to hit the LLM.
+        return json.dumps(massive_payload)
         
-    except Exception:
-        return json.dumps(fallback_news)
+    except Exception as e:
+        return json.dumps([f"Error reading local dump: {str(e)}"])
 
 def analyze_stock_sentiment(headlines_json: str) -> str:
     """

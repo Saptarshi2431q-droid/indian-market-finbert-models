@@ -1,26 +1,21 @@
 # AI4Invest Autonomous Execution Engine
 
 ## Quantitative Risk Report: INFY (Infosys)
-### Introduction
-This report provides a comprehensive analysis of the current market conditions for INFY (Infosys), including its live price, recent news headlines, and sentiment analysis using FinBERT.
+### Current Price and Market Sentiment Analysis
+The current price of INFY is ₹1042.2. The recent news headlines have been analyzed using FinBERT sentiment analysis, which revealed that out of the three headlines analyzed, there were no bullish or bearish signals, and all signals were neutral. 
 
-### Live Price
-The current live price of INFY is **1047.2**.
+### News Headlines Analysis
+The following news headlines were analyzed:
+1. Analysts update price targets for INFY.
+2. Market volume remains steady for INFY going into Q3.
+3. INFY evaluating new institutional growth strategies.
 
-### Financial News
-Recent news headlines for INFY include:
-* Analysts update price targets for INFY.
-* Market volume remains steady for INFY going into Q3.
-* INFY evaluating new institutional growth strategies.
-
-### Sentiment Analysis
-The FinBERT sentiment analysis of the recent news headlines indicates:
-* **Total analyzed headlines: 3**
-* **Bullish signals: 0**
-* **Bearish signals: 0**
-* **Neutral signals: 3**
-
-The neutral sentiment suggests that the current news headlines do not exhibit a strong positive or negative bias, which may indicate a stable market outlook for INFY.
+### Sentiment Analysis Results
+The sentiment analysis results are as follows:
+- Total headlines analyzed: 3
+- Bullish signals: 0
+- Bearish signals: 0
+- Neutral signals: 3
 
 ### Conclusion
-In conclusion, the current live price of INFY is 1047.2, and the recent news headlines suggest a neutral market sentiment. The FinBERT sentiment analysis supports this conclusion, indicating no strong bullish or bearish signals. This report provides a comprehensive overview of the current market conditions for INFY, which can be used to inform investment decisions.
+The quantitative risk report for INFY indicates a stable market sentiment, with no significant bullish or bearish signals detected in the recent news headlines. The current price of ₹1042.2 and the steady market volume going into Q3 suggest a neutral market outlook for INFY. However, the company's evaluation of new institutional growth strategies could potentially impact the stock's performance in the future.

@@ -1,0 +1,303 @@
+AI4Invest RAG Pipeline Optimization: Final Report
+Prepared by: [Your Name]
+Reviewed by: Instructor
+
+Executive Summary
+This presentation documents the end-to-end architecture, stress-testing, and economic routing blueprint for the Nifty/Bank Nifty AI pipeline, moving from raw API crashes to a highly optimized, dual-model production stack.
+
+Task 1: The Baseline Raw Dump Test
+
+Objective: Push 100 raw financial articles directly into the LLM to locate three hidden financial metrics.
+
+Code (generate_haystack.py & main_agent.py):
+
+Python
+[import json
+
+def create_haystack():
+    articles = []
+    
+    # Generic filler text to bloat the context window
+    filler_text = (
+        "Market volume remains steady for INFY going into Q3. Institutional investors are holding their positions. "
+        "The IT sector is seeing a slight slowdown in discretionary spending, but long-term cloud migration projects remain funded. "
+        "Analysts expect a stable dividend yield. "
+    ) * 20 # Multiplied to make each "article" massive
+    
+    for i in range(100):
+        if i == 5:
+            articles.append("NEEDLE 1: Infosys CEO strictly revised the Q3 operating margin guidance down to 21.5% due to unforeseen cloud infrastructure costs.")
+        elif i == 50:
+            articles.append("NEEDLE 2: The PEG ratio for Infosys has been secretly adjusted by top analysts to 1.84 following the recent hiring freeze.")
+        elif i == 95:
+            articles.append("NEEDLE 3: A major European banking client has just signed a $500M AI-transformation deal with Infosys.")
+        else:
+            articles.append(f"Article {i} Context: {filler_text}")
+            
+    with open("100_articles_dump.json", "w", encoding="utf-8") as f:
+        json.dump(articles, f, indent=4)
+        
+    print("[SUCCESS] 100_articles_dump.json generated with 100 massive articles and 3 hidden needles.")
+
+if __name__ == "__main__":
+    create_haystack() 
+    """
+Project: AI4Invest MLOps Agent Framework
+Module: Core Cognitive Orchestration Engine
+Author: Saptarshi Dutta (Rishi)
+"""
+
+import os
+import json
+import sys
+from groq import Groq
+import agent_tools 
+
+GROQ_KEY = os.environ.get("GROQ_API_KEY")
+if not GROQ_KEY:
+    print("[ERROR] GROQ_API_KEY not found.")
+    sys.exit(1)
+
+client = Groq(api_key=GROQ_KEY)
+
+agent_schema = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_live_price",
+            "description": "Fetch the live stock price for an Indian NSE ticker symbol.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "ticker": {"type": "string", "description": "The stock ticker, e.g., INFY"}
+                },
+                "required": ["ticker"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_financial_news",
+            "description": "Retrieve the latest financial news headlines for a stock ticker. Returns a list of text strings.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "ticker": {"type": "string", "description": "The stock ticker, e.g., INFY"}
+                },
+                "required": ["ticker"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "analyze_stock_sentiment",
+            "description": "Run custom FinBERT sentiment analysis on a list of news headlines.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "headlines_json": {
+                        "type": "string", 
+                        "description": "The JSON array of headline strings returned by the get_financial_news tool."
+                    }
+                },
+                "required": ["headlines_json"]
+            }
+        }
+    }
+]
+
+def execute_quant_agent_loop(user_query: str):
+    print("\n" + "=" * 75)
+    print(f"BOOTSTRAPPING QUANT COGNITIVE RUN: {user_query}")
+    print("=" * 75)
+    
+    messages = [
+        {
+            "role": "system", 
+            "content": (
+                "You are an elite Institutional Quantitative Risk Agent. "
+                "Step 1: Fetch the live price and the news. "
+                "Step 2: Take the exact output from the news tool and pass it into analyze_stock_sentiment. "
+                "Step 3: Synthesize all data into a highly professional markdown report."
+            )
+        },
+        {"role": "user", "content": user_query}
+    ]
+    
+    for current_step in range(5):
+        print(f"\n[ORCHESTRATION LOOP STEP {current_step + 1}] Processing token embeddings and planning action...")
+        
+        api_response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile", 
+            messages=messages,
+            tools=agent_schema,
+            tool_choice="auto",
+            parallel_tool_calls=False # Prevents syntax hallucination
+        )
+        
+        llm_decision = api_response.choices[0].message
+        messages.append(llm_decision) 
+        
+        if not llm_decision.tool_calls:
+            print("[ORCHESTRATION COMPLETE] Cognitive pipeline has synthesized all runtime observations.")
+            return llm_decision.content
+            
+        for targeted_call in llm_decision.tool_calls:
+            execution_name = targeted_call.function.name
+            execution_args = json.loads(targeted_call.function.arguments)
+            print(f"--> Match Verified. Triggering Python Interface: {execution_name}")
+            
+            if execution_name == "get_live_price":
+                observation = agent_tools.get_live_price(execution_args.get("ticker"))
+            elif execution_name == "get_financial_news":
+                observation = agent_tools.get_financial_news(execution_args.get("ticker"))
+            elif execution_name == "analyze_stock_sentiment":
+                observation = agent_tools.analyze_stock_sentiment(execution_args.get("headlines_json"))
+            else:
+                observation = json.dumps({"error": "Unknown tool."})
+                
+            print(f"<-- Metric Captured: {str(observation)[:80]}...")
+            
+            messages.append({
+                "role": "tool",
+                "tool_call_id": targeted_call.id,
+                "name": execution_name,
+                "content": observation
+            })
+            
+    return "[SYSTEM HALT] Execution limit reached."
+
+if __name__ == "__main__":
+    target_prompt = "Generate a quantitative risk report on INFY (Infosys). Fetch its price, news, and run the FinBERT sentiment analysis."
+    trading_thesis = execute_quant_agent_loop(target_prompt)
+    
+    report_filename = "INFY_Quantitative_Risk_Report.md"
+    with open(report_filename, "w", encoding="utf-8") as file:
+        file.write(f"# AI4Invest Autonomous Execution Engine\n\n")
+        file.write(trading_thesis)
+        
+    print("\n" + "=" * 75)
+    print(f"[SUCCESS] Proprietary Quant Trading Thesis generated.")
+    print(f"Report saved locally as: {report_filename}")
+    print("Open this file in VS Code and press (Ctrl + Shift + V) to view the formatted report.")
+    print("=" * 75)]
+Terminal Output:
+
+Plaintext
+[PASTE THE HTTP 413 CRASH OUTPUT HERE]
+Conclusion: Raw data brute-forcing mathematically guarantees pipeline collapse.
+
+Task 2: The FinBERT Pre-Filter (The Bouncer Protocol)
+
+Objective: Deploy the custom FinBERT model to filter out neutral news.
+
+Code (finbert_filter.py):
+
+Python
+[PASTE YOUR TASK 2 PYTHON CODE HERE]
+Terminal Output:
+
+Plaintext
+[PASTE THE OUTPUT SHOWING 1 NEEDLE FOUND HERE]
+Conclusion: The script executed but caused "Signal Dilution" by averaging out sentiment across large paragraphs.
+
+Task 3: Sentence-Level Chunking Architecture
+
+Objective: Find the optimal chunk size to prevent signal dilution.
+
+Code (finbert_filter.py updated):
+
+Python
+[PASTE YOUR TASK 3 PYTHON CODE HERE]
+Terminal Output:
+
+Plaintext
+[PASTE THE OUTPUT SHOWING 3,881 SENTENCES HERE]
+Conclusion: Sentence-level chunking isolated the needles perfectly but generated a massive volume of redundant data.
+
+Task 4: Context Deduplication & Assembly
+
+Objective: Compress 3,881 sentences using Python sets.
+
+Code (assemble_context.py):
+
+Python
+[PASTE YOUR TASK 4 PYTHON CODE HERE]
+Terminal Output:
+
+JSON
+[PASTE THE FINAL JSON OUTPUT WITH 3 SENTENCES HERE]
+Conclusion: Achieved a 99.92% data reduction, condensing the payload to exactly 3 unique sentences.
+
+Task 5: Final Institutional Report Generation
+
+Objective: Generate a directional trading thesis using the cleaned payload.
+
+Code (generate_final_call.py):
+
+Python
+[PASTE YOUR TASK 5 PYTHON CODE HERE]
+Terminal Output:
+
+Markdown
+[PASTE THE FINAL DOWN CALL REPORT HERE]
+Conclusion: The model performed flawless quantitative synthesis with a 60% confidence DOWN call.
+
+Task 6: Programmatic MLOps Pipeline Showdown
+
+Objective: Compare the raw dump approach versus the optimized pipeline.
+
+Code (task6_comparison.py):
+
+Python
+[PASTE YOUR TASK 6 PYTHON CODE HERE]
+Terminal Output:
+
+Plaintext
+[PASTE THE FINAL SCORECARD OUTPUT HERE]
+Conclusion: Proved a 99.94% token reduction and a 100% citation accuracy rate.
+
+Task 7: The Model Showdown (SLM vs. LLM)
+
+Objective: Compare an 8B small model vs a 70B flagship model using a 10-article payload.
+
+Code (model_showdown.py):
+
+Python
+[PASTE YOUR TASK 7 PYTHON CODE HERE]
+Conclusion: Smaller models instantly crash on raw text due to strict rate limits.
+
+Task 8: The Context Degradation Threshold
+
+Objective: Push both models to failure using the 100-article payload.
+
+Terminal Output:
+
+Plaintext
+[PASTE THE DOUBLE CRASH OUTPUT HERE]
+Conclusion: Flagship models cannot save you from bad data engineering; both pipelines collapsed.
+
+Task 9: The Preprocessing Equalizer Test
+
+Objective: Feed the 3-sentence optimized payload to both models.
+
+Code (model_equalizer.py):
+
+Python
+[PASTE YOUR TASK 9 PYTHON CODE HERE]
+Conclusion: Clean data allowed the small model to survive, but the flagship model provided vastly superior financial reasoning.
+
+Task 10: The Strategic Tradeoff Matrix
+
+Objective: Define the production routing rules for the company based on API economics.
+
+Conclusion (The Routed Architecture):
+
+Deploy Claude Haiku (Small Model) as the high-volume data bouncer for extraction and filtering.
+
+Deploy Claude Opus (Flagship Model) strictly as the executive orchestrator on the cleaned payload to finalize the trading thesis.
+
+Gamma AI Text-to-Presentation Tutorial
+This tutorial visually demonstrates how to use the "Paste in text" feature and adjust settings within the Gamma editor to structure your content seamlessly.

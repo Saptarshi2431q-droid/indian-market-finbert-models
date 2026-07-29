@@ -1,0 +1,89 @@
+{
+    "nodes": [
+        "India",
+        "US",
+        "Piyush Goyal",
+        "India-US trade talks",
+        "India-US trade deal",
+        "Right time",
+        "HCLTech",
+        "Q1 Results",
+        "India-US trade deal negotiations",
+        "HCL Tech",
+        "20% YoY",
+        "ICICI Prudential AMC",
+        "23% YoY",
+        "India's retail inflation",
+        "4.38%",
+        "Bajaj Consumer Care",
+        "84% YoY",
+        "Crude oil",
+        "4.30%",
+        "Rupee",
+        "95.77 Against US Dollar",
+        "DMart",
+        "11.3% YoY"
+    ],
+    "edges": [
+        {
+            "source": "India",
+            "target": "US",
+            "relation": "SEEKS_LUCRATIVE_TRADE_DEAL_WITH"
+        },
+        {
+            "source": "India",
+            "target": "India-US trade deal negotiations",
+            "relation": "SEES_NO_CHALLENGES_IN"
+        },
+        {
+            "source": "Piyush Goyal",
+            "target": "India-US trade talks",
+            "relation": "REFUTES_DEADLOCK_IN"
+        },
+        {
+            "source": "India-US trade deal",
+            "target": "Right time",
+            "relation": "AWAITS_SIGNING"
+        },
+        {
+            "source": "HCLTech",
+            "target": "Q1 Results",
+            "relation": "POSTS_EARNINGS_BEAT"
+        },
+        {
+            "source": "HCL Tech",
+            "target": "20% YoY",
+            "relation": "REPORTS_PROFIT_GROWTH"
+        },
+        {
+            "source": "ICICI Prudential AMC",
+            "target": "23% YoY",
+            "relation": "REPORTS_NET_PROFIT_GROWTH"
+        },
+        {
+            "source": "India's retail inflation",
+            "target": "4.38%",
+            "relation": "QUICKENS_TO"
+        },
+        {
+            "source": "Bajaj Consumer Care",
+            "target": "84% YoY",
+            "relation": "REPORTS_NET_PROFIT_SURGE"
+        },
+        {
+            "source": "Crude oil",
+            "target": "4.30%",
+            "relation": "RALLIES_STRONGLY"
+        },
+        {
+            "source": "Rupee",
+            "target": "95.77 Against US Dollar",
+            "relation": "SLIDES_TO"
+        },
+        {
+            "source": "DMart",
+            "target": "11.3% YoY",
+            "relation": "REPORTS_CONSOLIDATED_NET_PROFIT_GROWTH"
+        }
+    ]
+}

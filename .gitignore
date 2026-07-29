@@ -1,7 +1,20 @@
 @"
-# Environments
+# Environments & Cache
 env/
+venv/
 __pycache__/
+*.pyc
+.cache/
+
+# Environment Secrets
+.env
+
+# Vector Databases & Local Models
+chroma_db/
+models/
+indian_finbert_model/
+optimized_indian_finbert_final/
+experimental_finbert_models/
 
 # Datasets
 *.csv
@@ -11,16 +24,12 @@ __pycache__/
 *.png
 *.jpg
 
-# Logs and Models
+# Model Weights & Logs
 lightning_logs/
 wandb/
-indian_finbert_model/
-optimized_indian_finbert_final/
-experimental_finbert_models/
 *.pt
 *.bin
 *.ckpt
 *.safetensors
 *.h5
 "@ | Out-File -FilePath .gitignore -Encoding utf8
-models/
